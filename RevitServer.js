@@ -1,4 +1,5 @@
 ﻿var SERVICE_URL = "http://localhost/RevitServerAdminRESTService/AdminRESTService.svc/";
+
 var RevitServer = {
 
     //Revit Server API requires certain headers each time
@@ -24,6 +25,7 @@ var RevitServer = {
                     serverNameText += ' (Central Server)';
 
                 $('#serverName').html(serverNameText);
+
             },
             error: function (data) {
                 alert('error' + data);
@@ -32,7 +34,8 @@ var RevitServer = {
 
     },
 
-    getFolders: function (currentPath, level) {
+
+    getFolders: function (currentPath, level, parent) {
 
 
         $.ajax({
@@ -41,18 +44,34 @@ var RevitServer = {
             success: function (data) {
 
                 for (var i = 0; i < data.Folders.length; i++) {
-                    var spacer = "";
-                    for (var x = 0; x < level; x++) {
-                        spacer += "&nbsp;";
-                    }
 
-                    $('#Folders1').append("<li><a href='#'>" + spacer + data.Folders[i].Name + "</a><ul></ul></li>");
-
-                    var path = data.Path.replace('\\', '|');
+                    //this line looks funny.. but /.../gi is a global string search, and \\ is how we write a backslash
+                    // we are replacing the backslash character with a pipe character | which is how the API deals with subfolders
+                    var path = data.Path.replace(/\\/gi, '|');
                     if (path == " ")
                         path = "";
-                    RevitServer.getFolders(path + '|' + data.Folders[i].Name, level + 1);
+
+                    var pathid = data.Path.replace(/\\/gi, '').replace(' ', '') + data.Folders[i].Name;
+
+                    var branchHtml = "<li class='closed' id='" + pathid + "'>";
+                    branchHtml += "<div class='hitarea closed-hitarea expandable-hitarea lastExpandable-hitarea'></div>";
+                    branchHtml += "<span class='folder'>" + data.Folders[i].Name + "</span><ul></ul></li>";
+
+
+
+                    var branches = $(branchHtml).appendTo(parent + "> ul");
+                    $("#Folders1").treeview({
+                        add: branches
+                    }
+                   );
+                    $("#Folders1").find("div.hitarea").click($("#Folders1").find("span").click);
+
+
+                    //  $(parent + "> ul").append(branchHtml);
+                    // $("#Folders1").treeview();
+                    RevitServer.getFolders(path + '|' + data.Folders[i].Name, level + 1, "#" + pathid);
                 }
+
 
             }
         });
@@ -63,12 +82,16 @@ var RevitServer = {
 
         RevitServer.getServerInfo();
         //start on folder " " which is the shortcut to get the base folders
-        RevitServer.getFolders(" ", 1);
+        $("#Folders1").treeview();
+        RevitServer.getFolders(" ", 1, "#Folders1");
 
-        $(function() {
+
+        //        setTimeout(function () {
+        //            // $("#Folders1").treeview();
 
 
-        });
+        //        }, 1000);
+
     }
 };
 

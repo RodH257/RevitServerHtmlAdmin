@@ -23,7 +23,8 @@ html
     border: solid 1px black;
     min-height: 800px;
     margin: 2px;
-    background: #EEEEEE;
+    /*background: #EEEEEE;*/
+    background-color: white;
 }
 #right
 {
