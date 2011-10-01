@@ -1,0 +1,48 @@
+﻿*
+{
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+html
+{
+    background: #A4A4A4;
+    font-family: Arial;
+}
+
+#top
+{
+    height: 50px;
+    padding-top: 10px;
+}
+#left
+{
+    float: left;
+    width: 300px;
+    border: solid 1px black;
+    min-height: 800px;
+    margin: 2px;
+    background: #EEEEEE;
+}
+#right
+{
+    float: left;
+    min-height: 800px;
+    width: 900px;
+    margin: 2px;
+    border: solid 1px black;
+     background: #FFFFFF;
+}
+
+#left > #leftHeading {
+    background: #C0C0C0;
+    height: 30px;
+    border-bottom: solid 1px black;
+    padding-top: 8px;
+    padding-left: 10px;
+}
+#left > #leftHeading img
+{
+    cursor: pointer;   
+}
