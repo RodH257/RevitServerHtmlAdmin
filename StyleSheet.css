@@ -23,8 +23,7 @@ html
     border: solid 1px black;
     min-height: 800px;
     margin: 2px;
-    /*background: #EEEEEE;*/
-    background-color: white;
+    background: #EEEEEE;
 }
 #right
 {
@@ -46,4 +45,50 @@ html
 #left > #leftHeading img
 {
     cursor: pointer;   
+}
+
+.file {
+    cursor: pointer;
+    
+}
+
+.filetree span.currentSelection {
+    background-color: #C0C0C0;
+    margin-right: 5px;
+    border: solid 1px gray;
+}
+
+.filetree li.expandable span.currentSelection 
+{
+        background-color: #C0C0C0;
+}
+#rightContent {
+    font-size: small;
+}
+#rightContent h1 {
+    font-size: medium;
+    
+}
+
+#historyTable {
+	width: 850px;
+	margin: 0px auto;
+	border-collapse: collapse;
+	border: 1px solid #898989;
+    text-align: center;
+    margin-top: 20px;
+ }
+#historyTable th {
+	background: #e1e1e1;
+	height: 20px;
+    font-weight: bold;
+}
+#historyTable > tbody > td {
+	background: #ffffff;
+	height: 20px;
+}
+#historyTable td, #historyTable th {
+	padding: 0px;
+	border: 1px solid #898989;
+	vertical-align: middle;
 }

@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Revit Sever HTML Admin</title>
-  
     <link href="jquery.treeview.css" rel="stylesheet" type="text/css" />
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.min.js"></script>
     <script src="jquery.treeview.js" type="text/javascript"></script>
     <script src="RevitServer.js" type="text/javascript"></script>
-      <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
+    <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
+    <script src="plugins/date.js" type="text/javascript"></script>
 </head>
 <body>
     <div id="top">
@@ -23,15 +23,15 @@
             <img src="Images/6Lock.png" id="LockButton" />
         </div>
         <div id="leftContent">
-            <span id="serverName"></span>
-            <br />
             <div id="Folders1">
-            <ul class="filetree">
-            </ul></div>
-            
+                <ul class="filetree" id="rootNode">
+                </ul>
+            </div>
         </div>
     </div>
     <div id="right">
+        <div id="rightContent">
+        </div>
     </div>
 </body>
 </html>
