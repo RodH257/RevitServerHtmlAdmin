@@ -64,6 +64,7 @@ html
 }
 #rightContent {
     font-size: small;
+    padding: 20px;
 }
 #rightContent h1 {
     font-size: medium;

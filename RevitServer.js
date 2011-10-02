@@ -113,7 +113,11 @@ var RevitServer = {
         $(this).addClass('currentSelection');
 
         //clear details pane
-        $('#rightContent').html(' ');
+        $('#details').html(' ');
+        $('#modelhistory').html(' ');
+        $('#picture').html(' ');
+
+
 
         //show details for current selection
         //check for folder
@@ -123,6 +127,8 @@ var RevitServer = {
             var path = $(this).siblings('.fullPath').html();
 
             var fileName = $(this).html();
+
+
             $.ajax({
                 url: SERVICE_URL + path + '/DirectoryInfo',
                 headers: RevitServer.getCommonHeaders(),
@@ -136,7 +142,7 @@ var RevitServer = {
                     var createdDate = new Date();
                     createdDate.setTime(createdDateString);
 
-                    //construct html tto display on right
+                    //construct html to display on right
                     var html = "<h1>" + fileName + "</h1>";
                     html += "Last updated: " + updatedDate.toString("d-MMM-yyyy HH:mm") + "<br />";
                     html += "Date Created: " + createdDate.toString("d-MMM-yyyy HH:mm") + "<br />";
@@ -144,7 +150,7 @@ var RevitServer = {
                     html += "Number of folders: " + data.FolderCount + "<br />";
                     html += "Size: " + (data.Size / 1024).toFixed(2) + "KB <br />";
 
-                    $('#rightContent').html(html);
+                    $('#details').html(html);
                 }
             });
         }
@@ -154,6 +160,18 @@ var RevitServer = {
             //find its path
             var path = $(this).siblings('.fullPath').html();
             var fileName = $(this).html();
+
+
+            //get the thumbnail
+            $.ajax({
+                url: SERVICE_URL + path + '/thumbnail?width=64&height=64',
+                headers: RevitServer.getCommonHeaders(),
+                success: function (data) {
+                    var encodedData = Base64.encode(data);
+                    // $('#picture').html('<img src="data:image/png;base64,' + encodedData + '" >');
+                    //doesn't seem to work for some reason.
+                }
+            });
 
             //this isn't clear via the API, but you can get the info for a file the same way you do a directory
             $.ajax({
@@ -169,13 +187,13 @@ var RevitServer = {
                     var createdDate = new Date();
                     createdDate.setTime(createdDateString);
 
-                    //construct html tto display on right
+                    //construct html to display on right
                     var html = "<h1>" + fileName + "</h1>";
                     html += "Last updated: " + updatedDate.toString("d-MMM-yyyy HH:mm") + "<br />";
                     html += "Date Created: " + createdDate.toString("d-MMM-yyyy HH:mm") + "<br />";
                     html += "Size: " + (data.Size / 1024).toFixed(2) + "KB <br />";
 
-                    $('#rightContent').html(html);
+                    $('#details').html(html);
                 }
             });
 
@@ -222,7 +240,7 @@ var RevitServer = {
                     }
 
                     table += "</tbody></table>";
-                    $('#rightContent').append(table);
+                    $('#modelhistory').html(table);
                 }
             });
 
@@ -233,22 +251,113 @@ var RevitServer = {
     Operations: {
 
         createNew: function () {
-            var fileName = Utils.getSelectedPath();
-            if (!fileName)
+            var currentPath = Utils.getSelectedPath();
+            if (!currentPath)
                 return;
-            
+
+            var fileName = window.prompt("Enter a name for the folder", "");
+
+            $.ajax({
+                url: SERVICE_URL + currentPath + '|' + fileName,
+                type: 'PUT',
+                headers: RevitServer.getCommonHeaders(),
+                success: function (data) {
+                    alert('created');
+
+                }
+            });
         },
         remove: function () {
-
+            var currentPath = Utils.getSelectedPath();
+            if (!currentPath)
+                return;
+            if (confirm("Are you sure you want to delete this?")) {
+                $.ajax({
+                    url: SERVICE_URL + currentPath + '?newObjectName=',
+                    type: 'DELETE',
+                    headers: RevitServer.getCommonHeaders(),
+                    success: function (data) {
+                        alert(currentPath + ' was deleted');
+                        $('.currentSelection').parent().remove();
+                    }
+                });
+            }
         },
         cut: function () {
+            var currentPath = Utils.getSelectedPath();
+            if (!currentPath)
+                return;
 
+            RevitServer.Operations.ClipBoard = currentPath;
+            RevitServer.Operations.ClipBoardItem = $('.currentSelection').parent();
+            RevitServer.Operations.ClipBoardIsCut = true;
         },
         copy: function () {
+            var currentPath = Utils.getSelectedPath();
+            if (!currentPath)
+                return;
+
+            RevitServer.Operations.ClipBoard = currentPath;
+            RevitServer.Operations.ClipBoardItem = $('.currentSelection').parent();
+            RevitServer.Operations.ClipBoardIsCut = false;
 
         },
         paste: function () {
+            var currentPath = Utils.getSelectedPath();
+            if (!currentPath)
+                return;
 
+            if (!RevitServer.Operations.ClipBoard) {
+                alert("You must cut/copy first");
+                return;
+            }
+
+            var pasteAction = 'Copy';
+            if (RevitServer.Operations.ClipBoardIsCut) {
+                pasteAction = 'Move';
+            }
+            if (RevitServer.Operations.ClipBoardIsCut) {
+                if (confirm("Are you sure you want to move " + RevitServer.Operations.ClipBoard + " into " + currentPath)) {
+                    $.ajax({
+                        url: SERVICE_URL + currentPath + '/descendent?sourceObjectPath=' + RevitServer.Operations.ClipBoard
+                        + '&pasteAction=' + pasteAction + '&duplicateOption=CopyIncrement'
+                        ,
+                        type: 'post',
+                        headers: RevitServer.getCommonHeaders(),
+                        success: function (data) {
+
+                            $('.currentSelection').siblings('ul').append(RevitServer.Operations.ClipBoardItem);
+                            $(RevitServer.Operations.ClipBoardItem).parent().remove();
+                            $("#Folders1").treeview(
+                                { add: RevitServer.Operations.ClipBoardItem }
+                             );
+                        }
+                    });
+                }
+
+            }
+            else {
+                alert("pasting " + RevitServer.Operations.ClipBoard + " into " + currentPath);
+                $.ajax({
+                    url: SERVICE_URL + currentPath + '/descendent?sourceObjectPath=' + RevitServer.Operations.ClipBoard
+                        + '&pasteAction=' + pasteAction + '&duplicateOption=CopyIncrement'
+                        ,
+                    type: 'post',
+                    headers: RevitServer.getCommonHeaders(),
+                    success: function (data) {
+                        var copiedVersion = $(RevitServer.Operations.ClipBoardItem).clone();
+                        $('.currentSelection').siblings('ul').append(copiedVersion);
+                        $("#Folders1").treeview(
+                        { add: copiedVersion }
+                          );
+                    }
+                });
+
+            }
+
+            //do treeview hacks
+            $('.selectable:not(.setup)').click(RevitServer.selectedFolder).addClass('setup');
+            $("#Folders1").find("div.hitarea").click($("#Folders1").find("span").click);
         },
         toggleLock: function () {
 
@@ -259,12 +368,19 @@ var RevitServer = {
 
         //setup treeview
         $("#Folders1").treeview();
-        
+
         RevitServer.getServerInfo();
 
-        
         //start on folder " " which is the shortcut to get the base folders
         RevitServer.getFolders(" ", "#serverNode");
+
+        //add handlers to the buttons
+        $('#CreateNewButton').click(RevitServer.Operations.createNew);
+        $('#DeleteButton').click(RevitServer.Operations.remove);
+        $('#CutButton').click(RevitServer.Operations.cut);
+        $('#CopyButton').click(RevitServer.Operations.copy);
+        $('#PasteButton').click(RevitServer.Operations.paste);
+        $('#LockButton').click(RevitServer.Operations.toggleLock);
 
     }
 };
@@ -285,10 +401,16 @@ var Utils = {
         var path = $(selected).siblings('.fullPath').html();
         var fileName = $(selected).html();
 
-        if (!fileName)
-            alert('Please select a file or folder first');
+        if (!fileName) {
 
-        return fileName;
+            alert('Please select a file/folder first');
+            return null;
+        }
+
+        if ($(selected).hasClass('folder'))
+            return path;
+        else
+            return path + '|' + fileName;
     }
 };
 

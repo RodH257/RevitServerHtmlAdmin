@@ -5,6 +5,10 @@
     <link href="jquery.treeview.css" rel="stylesheet" type="text/css" />
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.min.js"></script>
     <script src="jquery.treeview.js" type="text/javascript"></script>
+
+    <!-- used for base64 encoding the images from web service -->
+    <script src="plugins/Base64.js" type="text/javascript"></script>
+
     <script src="RevitServer.js" type="text/javascript"></script>
     <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
     <script src="plugins/date.js" type="text/javascript"></script>
@@ -15,12 +19,12 @@
     </div>
     <div id="left">
         <div id="leftHeading">
-            <img src="Images/1CreateNew.png" id="CreateNewButton" />
-            <img src="Images/2Delete.png" id="DeleteButton" />
-            <img src="Images/3Cut.png" id="CutButton" />
-            <img src="Images/4Copy.png" id="CopyButton" />
-            <img src="Images/5Paste.png" id="PasteButton" />
-            <img src="Images/6Lock.png" id="LockButton" />
+            <img src="Images/1CreateNew.png" id="CreateNewButton" alt="New" name="New" />
+            <img src="Images/2Delete.png" id="DeleteButton" alt="Delete" />
+            <img src="Images/3Cut.png" id="CutButton" alt="Cut" />
+            <img src="Images/4Copy.png" id="CopyButton" alt="Copy" />
+            <img src="Images/5Paste.png" id="PasteButton"  alt="Paste"/>
+            <img src="Images/6Lock.png" id="LockButton" alt="Lock" />
         </div>
         <div id="leftContent">
             <div id="Folders1">
@@ -31,6 +35,9 @@
     </div>
     <div id="right">
         <div id="rightContent">
+        <div id="picture"></div>
+        <div id="details"></div>
+         <div id="modelhistory"></div>
         </div>
     </div>
 </body>
