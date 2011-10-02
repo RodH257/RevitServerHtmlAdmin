@@ -3,7 +3,7 @@
 <head>
     <title>Revit Sever HTML Admin</title>
     <link href="jquery.treeview.css" rel="stylesheet" type="text/css" />
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.js"></script>
     <script src="jquery.treeview.js" type="text/javascript"></script>
 
     <!-- used for base64 encoding the images from web service -->

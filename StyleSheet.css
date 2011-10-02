@@ -8,7 +8,8 @@
 html
 {
     background: #A4A4A4;
-    font-family: Arial;
+    font-family: Verdana;
+    font-size: small;
 }
 
 #top
@@ -63,7 +64,7 @@ html
         background-color: #C0C0C0;
 }
 #rightContent {
-    font-size: small;
+    font-size: smaller;
     padding: 20px;
 }
 #rightContent h1 {
@@ -92,4 +93,10 @@ html
 	padding: 0px;
 	border: 1px solid #898989;
 	vertical-align: middle;
+}
+
+.locked {
+    color: #983287;
+    font-weight: bold;
+    font-style: italic;
 }
