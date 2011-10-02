@@ -12,6 +12,9 @@ var RevitServer = {
         return headers;
     },
 
+    /*
+    * Gets the general server info 
+    */
     getServerInfo: function () {
 
         //ajax call from Jquery
@@ -39,6 +42,10 @@ var RevitServer = {
                 //theres a bug with treeview plugin that makes the +/- box not work
                 // here is my hack to get it working
                 $("#Folders1").find("div.hitarea").click($("#Folders1").find("span").click);
+
+                //get the rest of the folders
+                //start on folder " " which is the shortcut to get the base folders
+                RevitServer.getFolders(" ", "#serverNode");
             },
             error: function (data) {
                 alert('error' + data);
@@ -47,10 +54,13 @@ var RevitServer = {
 
     },
 
-
+    /*
+    * Gets all the folders recursively starting at the currentPath
+    */
     getFolders: function (currentPath, parent) {
 
-        // first, get the lock status of the descendants
+        // first, get the lock status of the descendants, then on the callback, get the folder info
+        // this is so we can indicate that the folder is locked
         $.ajax({
             url: SERVICE_URL + currentPath + '/descendent/locks',
             headers: RevitServer.getCommonHeaders(),
@@ -83,7 +93,6 @@ var RevitServer = {
 
                                 }
                             }
-
 
                             //construct the html
                             var branchHtml = "<li class='closed' id='" + pathid + "'>";
@@ -135,11 +144,12 @@ var RevitServer = {
 
             }
         });
-
-
-
     },
 
+    /*
+    * Event for when a folder is clicked
+    * Sets up the display on the right
+    */
     selectedFolder: function (event) {
         //highlight the current selection
         $('.currentSelection').removeClass('currentSelection');
@@ -157,11 +167,9 @@ var RevitServer = {
             $('#LockButton').attr("src", "Images/6Lock.png");
         }
 
-
         //show details for current selection
         //check for folder
         if ($(this).hasClass('folder')) {
-
             //find its path
             var path = $(this).siblings('.fullPath').html();
             var fileName = $(this).html();
@@ -200,6 +208,7 @@ var RevitServer = {
             var fileName = $(this).html();
 
             //unfortunately getting the thumbnail doesn't work at present
+            //left here for future action
             //            //get the thumbnail
             //            $.ajax({
             //                url: SERVICE_URL + path + '/thumbnail?width=64&height=64',
@@ -237,12 +246,9 @@ var RevitServer = {
 
 
             // also get the history
-
             $.ajax({
                 url: SERVICE_URL + path + '/history',
                 headers: RevitServer.getCommonHeaders(),
-
-
                 success: function (data) {
 
                     var table = "<br /><h1>Submission history</h1><table id='historyTable'>";
@@ -286,8 +292,11 @@ var RevitServer = {
 
     },
 
+    //Event handlers for all of the buttons
     Operations: {
-
+        /*
+        * Creates a new folder
+        */
         createNew: function () {
             var currentPath = Utils.getSelectedPath();
             if (!currentPath)
@@ -305,6 +314,10 @@ var RevitServer = {
                 }
             });
         },
+
+        /*
+        * Deletes the selected item
+        */
         remove: function () {
             var currentPath = Utils.getSelectedPath();
             if (!currentPath)
@@ -321,6 +334,10 @@ var RevitServer = {
                 });
             }
         },
+
+        /*
+        * Cuts the selected item
+        */
         cut: function () {
             var currentPath = Utils.getSelectedPath();
             if (!currentPath)
@@ -330,6 +347,10 @@ var RevitServer = {
             RevitServer.Operations.ClipBoardItem = $('.currentSelection').parent();
             RevitServer.Operations.ClipBoardIsCut = true;
         },
+
+        /*
+        * Copies selected item
+        */
         copy: function () {
             var currentPath = Utils.getSelectedPath();
             if (!currentPath)
@@ -341,6 +362,10 @@ var RevitServer = {
             $('#PasteButton').attr("src", "Images/5PasteReady.png");
 
         },
+
+        /*
+        * Pastes what is on the clipboard
+        */
         paste: function () {
             var currentPath = Utils.getSelectedPath();
             if (!currentPath)
@@ -396,6 +421,9 @@ var RevitServer = {
             $('#PasteButton').attr("src", "Images/5Paste.png");
         },
 
+        /*
+        * Toggles the lock on the selected item
+        */
         toggleLock: function () {
             var currentPath = Utils.getSelectedPath();
             if (!currentPath)
@@ -434,23 +462,25 @@ var RevitServer = {
                     });
                 }
             }
-            
         }
-
-
     },
 
+    /*
+    * Sets up the tree. Stores HTML in a variable so it can be recreated later
+    */
     initTree: function () {
         //save the left content before the treeview so we can rest 
         RevitServer.LeftContent = $("#leftContent").html();
 
         //setup treeview
         $("#Folders1").treeview();
+        
+        //get the server info which will trigger the rest recursively
         RevitServer.getServerInfo();
-
-        //start on folder " " which is the shortcut to get the base folders
-        RevitServer.getFolders(" ", "#serverNode");
     },
+    /*
+    * Initialisation functions
+    */
     init: function () {
         RevitServer.initTree();
 
@@ -482,23 +512,15 @@ var Utils = {
         var fileName = $(selected).html();
 
         if (!fileName) {
-
             alert('Please select a file/folder first');
             return null;
         }
-
         return path;
-        if ($(selected).hasClass('folder'))
-            return path;
-        else
-            return path + '|' + fileName;
     }
 };
 
 
 //entry point
 $(document).ready(function () {
-
     RevitServer.init();
-
 });

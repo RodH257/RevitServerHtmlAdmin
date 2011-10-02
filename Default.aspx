@@ -7,11 +7,11 @@
     <script src="jquery.treeview.js" type="text/javascript"></script>
 
     <!-- used for base64 encoding the images from web service -->
-    <script src="plugins/Base64.js" type="text/javascript"></script>
+    <script src="Base64.js" type="text/javascript"></script>
 
     <script src="RevitServer.js" type="text/javascript"></script>
     <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
-    <script src="plugins/date.js" type="text/javascript"></script>
+    <script src="date.js" type="text/javascript"></script>
 </head>
 <body>
     <div id="top">
