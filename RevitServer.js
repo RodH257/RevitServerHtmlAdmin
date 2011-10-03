@@ -21,6 +21,7 @@ var RevitServer = {
         $.ajax({
             url: SERVICE_URL + "serverProperties",
             headers: RevitServer.getCommonHeaders(),
+            cache: false,
             success: function (data) {
                 var serverNameText = data.CentralServerName;
                 if (data.IsCentralServer)
@@ -64,12 +65,14 @@ var RevitServer = {
         $.ajax({
             url: SERVICE_URL + currentPath + '/descendent/locks',
             headers: RevitServer.getCommonHeaders(),
+            cache: false,
             success: function (lockData) {
 
                 //now get the actual folder info
                 $.ajax({
                     url: SERVICE_URL + currentPath + '/contents',
                     headers: RevitServer.getCommonHeaders(),
+                    cache: false,
                     success: function (data) {
 
                         //add all the subfolders
@@ -80,6 +83,8 @@ var RevitServer = {
                             var path = data.Path.replace(/\\/gi, '|');
                             if (path == " ")
                                 path = "";
+                            else
+                                path = path + "|";
                             //we are storign the path to this folder so we can append to it 
                             var pathid = data.Path.replace(/\\/gi, '').replace(' ', '') + data.Folders[i].Name;
 
@@ -98,7 +103,7 @@ var RevitServer = {
                             var branchHtml = "<li class='closed' id='" + pathid + "'>";
                             branchHtml += "<div class='hitarea closed-hitarea expandable-hitarea lastExpandable-hitarea'></div>";
                             branchHtml += "<span class='folder selectable " + lockedClass + "'>" + data.Folders[i].Name + "</span>";
-                            branchHtml += "<span style='display:none' class='fullPath'>" + path + '|' + data.Folders[i].Name + "</span>";
+                            branchHtml += "<span style='display:none' class='fullPath'>" + path + data.Folders[i].Name + "</span>";
                             branchHtml += "<ul></ul></li>";
 
                             //append the new branch to the others and update treeview
@@ -111,7 +116,7 @@ var RevitServer = {
                             // here is my hack to get it working
                             $("#Folders1").find("div.hitarea").click($("#Folders1").find("span").click);
                             //recursively  call the get folders, but this time call it with the sub folder.
-                            RevitServer.getFolders(path + '|' + data.Folders[i].Name, "#" + pathid);
+                            RevitServer.getFolders(path + data.Folders[i].Name, "#" + pathid);
                         }
 
                         //add all the models in this folder
@@ -178,6 +183,7 @@ var RevitServer = {
             $.ajax({
                 url: SERVICE_URL + path + '/DirectoryInfo',
                 headers: RevitServer.getCommonHeaders(),
+                cache: false,
                 success: function (data) {
 
                     var updatedDateString = data.DateModified.replace('/Date(', '').replace(')/', '');
@@ -224,6 +230,7 @@ var RevitServer = {
             $.ajax({
                 url: SERVICE_URL + path + '/DirectoryInfo',
                 headers: RevitServer.getCommonHeaders(),
+                cache: false,
                 success: function (data) {
 
                     var updatedDateString = data.DateModified.replace('/Date(', '').replace(')/', '');
@@ -249,6 +256,7 @@ var RevitServer = {
             $.ajax({
                 url: SERVICE_URL + path + '/history',
                 headers: RevitServer.getCommonHeaders(),
+                cache: false,
                 success: function (data) {
 
                     var table = "<br /><h1>Submission history</h1><table id='historyTable'>";
@@ -326,6 +334,7 @@ var RevitServer = {
                 $.ajax({
                     url: SERVICE_URL + currentPath + '?newObjectName=',
                     type: 'DELETE',
+                    cache: false,
                     headers: RevitServer.getCommonHeaders(),
                     success: function (data) {
                         alert(currentPath + ' was deleted');
@@ -346,6 +355,7 @@ var RevitServer = {
             RevitServer.Operations.ClipBoard = currentPath;
             RevitServer.Operations.ClipBoardItem = $('.currentSelection').parent();
             RevitServer.Operations.ClipBoardIsCut = true;
+            $('#PasteButton').attr("src", "Images/5PasteReady.png");
         },
 
         /*
@@ -388,6 +398,7 @@ var RevitServer = {
                         ,
                         type: 'post',
                         headers: RevitServer.getCommonHeaders(),
+                        cache: false,
                         success: function (data) {
 
                             //recreate the tree, this could be done dynamically but for now, we're just wiping it.
@@ -406,6 +417,7 @@ var RevitServer = {
                         ,
                     type: 'post',
                     headers: RevitServer.getCommonHeaders(),
+                    cache: false,
                     success: function (data) {
                         //recreate the tree, this could be done dynamically but for now, we're just wiping it.
                         $("#leftContent").html(RevitServer.LeftContent);
@@ -430,7 +442,7 @@ var RevitServer = {
                 return;
 
             var selected = $('.currentSelection');
-            
+
             //check if its currently locked
             if ($(selected).hasClass('locked')) {
                 //it is, unlock it 
@@ -439,6 +451,7 @@ var RevitServer = {
                         url: SERVICE_URL + currentPath + '/lock?objectMustExist=false',
                         type: 'DELETE',
                         headers: RevitServer.getCommonHeaders(),
+                        cache: false,
                         success: function (data) {
                             $('.currentSelection').removeClass('locked');
                             //change the icon
@@ -474,7 +487,7 @@ var RevitServer = {
 
         //setup treeview
         $("#Folders1").treeview();
-        
+
         //get the server info which will trigger the rest recursively
         RevitServer.getServerInfo();
     },

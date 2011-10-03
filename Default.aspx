@@ -5,10 +5,8 @@
     <link href="jquery.treeview.css" rel="stylesheet" type="text/css" />
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.js"></script>
     <script src="jquery.treeview.js" type="text/javascript"></script>
-
     <!-- used for base64 encoding the images from web service -->
     <script src="Base64.js" type="text/javascript"></script>
-
     <script src="RevitServer.js" type="text/javascript"></script>
     <link href="StyleSheet.css" rel="stylesheet" type="text/css" />
     <script src="date.js" type="text/javascript"></script>
@@ -23,7 +21,7 @@
             <img src="Images/2Delete.png" id="DeleteButton" alt="Delete" />
             <img src="Images/3Cut.png" id="CutButton" alt="Cut" />
             <img src="Images/4Copy.png" id="CopyButton" alt="Copy" />
-            <img src="Images/5Paste.png" id="PasteButton"  alt="Paste"/>
+            <img src="Images/5Paste.png" id="PasteButton" alt="Paste" />
             <img src="Images/6Lock.png" id="LockButton" alt="Lock" />
         </div>
         <div id="leftContent">
@@ -35,10 +33,17 @@
     </div>
     <div id="right">
         <div id="rightContent">
-        <div id="picture"></div>
-        <div id="details"></div>
-         <div id="modelhistory"></div>
+            <div id="picture">
+            </div>
+            <div id="details">
+            </div>
+            <div id="modelhistory">
+            </div>
         </div>
+    </div>
+    <div id="footer">
+        <p>
+            HTML conversion by <a href="http://rodhowarth.com">Rod Howarth</a></p>
     </div>
 </body>
 </html>

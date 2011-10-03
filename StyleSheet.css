@@ -100,3 +100,8 @@ html
     font-weight: bold;
     font-style: italic;
 }
+
+#footer {
+    clear: both;
+    margin-top: 10px;
+}
